@@ -8,8 +8,35 @@
    ************************************************************ */
    
 #ifdef USE_BASE
+#ifdef HOVERSERIAL
+  /* The Robogaia Mega Encoder shield */
+ // #include "MegaEncoderCounter.h"
 
-#ifdef ROBOGAIA
+  /* Create the encoder shield object */
+ // MegaEncoderCounter encoders = MegaEncoderCounter(4); // Initializes the Mega Encoder Counter in the 4X Count mode
+  
+  /* Wrap the encoder reading function */
+  long readEncoder(int i) {
+    return 0;
+  }
+
+  /* Wrap the encoder initializeing to be run in the main setup() function */
+  void initEncoders() {
+    /* Nothing to do here */
+  }
+
+  /* Wrap the encoder reset function */
+  void resetEncoder(int i) {
+    
+  }
+
+  /* Wrap the encoder reset function */
+  void resetEncoders() {
+   
+  }
+  
+
+#elif ROBOGAIA
   /* The Robogaia Mega Encoder shield */
   #include "MegaEncoderCounter.h"
 
@@ -247,5 +274,3 @@
 #endif
 
 #endif
-
-

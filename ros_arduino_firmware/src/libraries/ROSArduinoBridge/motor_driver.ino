@@ -138,6 +138,24 @@
   }
 
 /* For testing only! */
+#elif defined(HOVER_SERIAL)
+  /* Wrap the motor driver initialization */
+  void initMotorController() {
+      hover_setup(); 
+      }
+  
+  /* A convenience function for setting both motor speeds */
+  void setMotorSpeeds(int leftSpeed, int rightSpeed) {
+    setMotorSpeed(LEFT, leftSpeed);
+    setMotorSpeed(RIGHT, rightSpeed);
+  }
+
+  /* Wrap the drive motor set speed function */
+  void setMotorSpeed(int i, int spd) {
+    if (i == LEFT) {}
+    else {}
+  }
+
 #elif defined(NO_MOTOR_CONTROLLER)
   /* Wrap the motor driver initialization */
   void initMotorController() { }
@@ -158,4 +176,3 @@
 #endif
 
 #endif
-

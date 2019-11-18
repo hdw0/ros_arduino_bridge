@@ -45,14 +45,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-//#define USE_BASE      // Enable/disable the base controller code
+#define USE_BASE      // Enable/disable the base controller code
 
 //#define USE_IMU       // Enable/disable use of an IMU
 
 /* Define the motor controller and encoder library you are using */
 #ifdef USE_BASE
+  /*Hover -> Serial CRC driver ARDUINO NANO SoftwareSerial pin 2 3 -> RX TX -> SoftwareSerial oSerial(2,3); // RX, TX*/
+  #define HOVER_SERIAL
   /* The Pololu VNH5019 dual motor driver shield */
-  #define POLOLU_VNH5019
+  //#define POLOLU_VNH5019
 
   /* The Pololu MC33926 dual motor driver shield */
   //#define POLOLU_MC33926
@@ -69,22 +71,24 @@
   */
   //#define USE_ARDUINO_MOTOR_SHIELD_R3_BRAKE
   
-  /* For testing only */
-  // #define NO_MOTOR_CONTROLLER
+  /* For testing only */  
+   //#define NO_MOTOR_CONTROLLER
   
   /* The RoboGaia encoder shield */
-  #define ROBOGAIA
+  //#define ROBOGAIA
   
   /* The RoboGaia 3-axis encoder shield */
   //#define ROBOGAIA_3_AXIS
   
   /* Encoders directly attached to Arduino board */
   //#define ARDUINO_ENC_COUNTER
+  /* Encoders uart attached to hover board */ 
+  #define HOVERSERIAL
 #endif
 
 //#define USE_SERVOS  // Enable/disable use of old PWM servo support as defined in servos.h
 
-#define USE_SERVOS2  // Enable/disable use of new PWM servo support as defined in servos2.h
+//#define USE_SERVOS2  // Enable/disable use of new PWM servo support as defined in servos2.h
 
 /* Include old servo support if required */
 #ifdef USE_SERVOS
@@ -320,8 +324,12 @@ int runCommand() {
       moving = 0;
     }
     else moving = 1;
+    #ifdef HOVER_SERIAL
+     Hover_Send(arg1,arg2);
+    #elif
     leftPID.TargetTicksPerFrame = arg1;
     rightPID.TargetTicksPerFrame = arg2;
+    #endif
     Serial.println(F("OK")); 
     break;
   case UPDATE_PID:
@@ -376,8 +384,14 @@ void setup() {
    interval and check for auto-stop conditions.
 */
 void loop() {
+  #ifdef HOVER_SERIAL
+  Hover_Receive();
+  #endif
+  
   while (Serial.available() > 0) {
-    
+    #ifdef HOVER_SERIAL
+    Hover_Receive();
+    #endif
     // Read the next character
     chr = Serial.read();
 
@@ -425,8 +439,12 @@ void loop() {
   
     // Check to see if we have exceeded the auto-stop interval
     if ((millis() - lastMotorCommand) > AUTO_STOP_INTERVAL) {
-      setMotorSpeeds(0, 0);
-      moving = 0;
+      #ifdef HOVER_SERIAL        
+        Hover_Send(0,0);
+      #elif
+        setMotorSpeeds(0, 0);
+      #endif  
+        moving = 0;
     }
   #endif
 
@@ -445,4 +463,3 @@ void loop() {
     }
   #endif
 }
-
