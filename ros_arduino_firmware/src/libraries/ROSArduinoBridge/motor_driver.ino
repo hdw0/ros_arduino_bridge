@@ -146,8 +146,7 @@
   
   /* A convenience function for setting both motor speeds */
   void setMotorSpeeds(int leftSpeed, int rightSpeed) {
-    setMotorSpeed(LEFT, leftSpeed);
-    setMotorSpeed(RIGHT, rightSpeed);
+    Hover_Send(leftSpeed,rightSpeed);
   }
 
   /* Wrap the drive motor set speed function */

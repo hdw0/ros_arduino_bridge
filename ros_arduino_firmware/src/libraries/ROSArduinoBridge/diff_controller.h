@@ -129,6 +129,7 @@ void updatePID() {
   doPID(&leftPID);
 
   /* Set the motor speeds accordingly */
+  #ifndef HOVER_SERIAL
   setMotorSpeeds(leftPID.output, rightPID.output);
+  #endif
 }
-

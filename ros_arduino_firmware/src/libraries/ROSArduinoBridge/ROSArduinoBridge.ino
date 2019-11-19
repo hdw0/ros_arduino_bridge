@@ -361,6 +361,7 @@ void setup() {
     initEncoders();
     initMotorController();
     resetPID();
+    //setMotorSpeeds(-90, 100); //Только для проверки расчетов
   #endif
 
   #ifdef USE_IMU
@@ -438,13 +439,10 @@ void loop() {
     }
   
     // Check to see if we have exceeded the auto-stop interval
-    if ((millis() - lastMotorCommand) > AUTO_STOP_INTERVAL) {
-      #ifdef HOVER_SERIAL        
-        Hover_Send(0,0);
-      #elif
-        setMotorSpeeds(0, 0);
-      #endif  
+    if ((millis() - lastMotorCommand) > AUTO_STOP_INTERVAL) {      
+        setMotorSpeeds(0, 0);       
         moving = 0;
+        lastMotorCommand = millis();
     }
   #endif
 

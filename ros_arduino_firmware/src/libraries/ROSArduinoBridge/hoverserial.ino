@@ -56,15 +56,20 @@ void Hover_Send(int leftSpeed, int rightSpeed)
 {
     int steer=0;
     float tmp=0;
+    leftSpeed=constrain(leftSpeed,-200,200);
+    rightSpeed=constrain(rightSpeed,-200,200);
     tmp=leftSpeed-rightSpeed;
     tmp=(float)tmp/(float)(rightSpeed+leftSpeed);
     tmp*=(float)1000.0;
+    tmp=constrain(tmp,-1000,1000);
     oCmd.steer = (int)tmp; ////////////
     tmp=leftSpeed+rightSpeed;
     tmp/=(float)2.0;
-    
+    tmp=constrain(tmp,-200,200);
     oCmd.speed = (int)tmp; ////////////  
-
+//Serial.println("SetMotor DEBUG");
+//Serial.println(oCmd.steer);
+//Serial.println(oCmd.speed);
   uint32_t crc = 0;
   crc32((const void *)&oCmd, sizeof(Serialcommand)-4,   &crc);
   oCmd.crc = crc;
