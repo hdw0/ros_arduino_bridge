@@ -5,6 +5,7 @@
 #ifdef HOVER_SERIAL
 #include <SoftwareSerial.h>
 SoftwareSerial oSerial(2,3); // RX, TX
+//int leftSpeed, rightSpeed;
 
 typedef struct{
    int16_t steer;
@@ -60,11 +61,12 @@ void Hover_Send(int leftSpeed, int rightSpeed)
     rightSpeed=constrain(rightSpeed,-200,200);
     tmp=leftSpeed-rightSpeed;
     tmp=(float)tmp/(float)(rightSpeed+leftSpeed);
-    tmp*=(float)1000.0;
+    tmp*=(float)400.0;
     tmp=constrain(tmp,-1000,1000);
     oCmd.steer = (int)tmp; ////////////
     tmp=leftSpeed+rightSpeed;
     tmp/=(float)2.0;
+    tmp=max(leftSpeed,rightSpeed);
     tmp=constrain(tmp,-200,200);
     oCmd.speed = (int)tmp; ////////////  
 //Serial.println("SetMotor DEBUG");
@@ -74,7 +76,7 @@ void Hover_Send(int leftSpeed, int rightSpeed)
   crc32((const void *)&oCmd, sizeof(Serialcommand)-4,   &crc);
   oCmd.crc = crc;
   
- // oSerial.write((uint8_t *) &oCmd, sizeof(oCmd)); 
+  oSerial.write((uint8_t *) &oCmd, sizeof(oCmd)); 
 }
 
 int iFailedRec = 0;
@@ -107,7 +109,7 @@ boolean Receive()
   return false;
 }
 
-#define TIME_SEND 30
+#define TIME_SEND 100
 int iTest = 10;
 unsigned long iTimeSend = 0;
 
@@ -130,7 +132,8 @@ void Hover_Receive(void)
     Serial.print("\tlA: ");Serial.print(0.01 * (float)oFeedback.iAmpL);
     Serial.print("\trA: ");Serial.println(0.01 * (float)oFeedback.iAmpR);
     */
-  //}
+    Hover_Send(leftSpeed, rightSpeed);
+  }
     if (iTimeSend > iNow) return;
 
   iTimeSend = iNow + TIME_SEND;
@@ -141,8 +144,8 @@ void Hover_Receive(void)
   //if (iTest>400) iTest=-400;
 
  //digitalWrite(LED_BUILTIN, (iNow%2000)<1000);
-  oSerial.write((uint8_t *) &oCmd, sizeof(oCmd));
-  }
+ // oSerial.write((uint8_t *) &oCmd, sizeof(oCmd));
+  //}
   
 }
 

@@ -172,7 +172,7 @@ char argv2[32];
 // The arguments converted to integers
 long arg1;
 long arg2;
-
+int leftSpeed, rightSpeed;
 /* Clear the current command parameters */
 void resetCommand() {
   cmd = NULL;
@@ -325,7 +325,9 @@ int runCommand() {
     }
     else moving = 1;
     #ifdef HOVER_SERIAL
-     Hover_Send(arg1,arg2);
+    leftSpeed=arg1;
+    rightSpeed=arg2;
+     //Hover_Send(arg1,arg2);
     #elif
     leftPID.TargetTicksPerFrame = arg1;
     rightPID.TargetTicksPerFrame = arg2;
@@ -390,9 +392,9 @@ void loop() {
   #endif
   
   while (Serial.available() > 0) {
-    //#ifdef HOVER_SERIAL
-   // Hover_Receive();
-   // #endif
+   #ifdef HOVER_SERIAL
+   //Hover_Receive();
+   #endif
     // Read the next character
     chr = Serial.read();
 
