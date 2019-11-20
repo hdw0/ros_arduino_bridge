@@ -390,9 +390,9 @@ void loop() {
   #endif
   
   while (Serial.available() > 0) {
-    #ifdef HOVER_SERIAL
-    Hover_Receive();
-    #endif
+    //#ifdef HOVER_SERIAL
+   // Hover_Receive();
+   // #endif
     // Read the next character
     chr = Serial.read();
 

@@ -11,7 +11,7 @@ typedef struct{
    int16_t speed;
    uint32_t crc;
 } Serialcommand;
-Serialcommand oCmd;
+static Serialcommand oCmd;
 
 typedef struct{
    int16_t iSpeedL; // 100* km/h
@@ -24,7 +24,7 @@ typedef struct{
    int16_t iAmpR;  // 100* A
    uint32_t crc;
 } SerialFeedback;
-SerialFeedback oFeedback;
+static SerialFeedback oFeedback;
 
 void hover_setup() 
 {
@@ -74,11 +74,11 @@ void Hover_Send(int leftSpeed, int rightSpeed)
   crc32((const void *)&oCmd, sizeof(Serialcommand)-4,   &crc);
   oCmd.crc = crc;
   
-  oSerial.write((uint8_t *) &oCmd, sizeof(oCmd)); 
+ // oSerial.write((uint8_t *) &oCmd, sizeof(oCmd)); 
 }
 
 int iFailedRec = 0;
-boolean Hover_Receive()
+boolean Receive()
 { 
   if (oSerial.available()<  sizeof(SerialFeedback))
     return false;
@@ -110,16 +110,18 @@ boolean Hover_Receive()
 #define TIME_SEND 30
 int iTest = 10;
 unsigned long iTimeSend = 0;
-/*
-void loop(void)
+
+void Hover_Receive(void)
 { 
   unsigned long iNow = millis();
   if (Receive())
   {
     if (iFailedRec)
-      Serial.println();
+      {
+      //Serial.println();
+      }
     iFailedRec = 0;
-    Serial.print("speedL: ");Serial.print(-0.01*(float)oFeedback.iSpeedL);
+   /* Serial.print("speedL: ");Serial.print(-0.01*(float)oFeedback.iSpeedL);
     Serial.print("\tspeedR: ");Serial.print(-0.01*(float)oFeedback.iSpeedR);
     Serial.print("\tskippedL: ");Serial.print(oFeedback.iHallSkippedL);
     Serial.print("\tskippedR: ");Serial.print(oFeedback.iHallSkippedR);
@@ -127,19 +129,21 @@ void loop(void)
     Serial.print("\tU: ");Serial.print(0.01 * (float)oFeedback.iVolt);
     Serial.print("\tlA: ");Serial.print(0.01 * (float)oFeedback.iAmpL);
     Serial.print("\trA: ");Serial.println(0.01 * (float)oFeedback.iAmpR);
+    */
   //}
     if (iTimeSend > iNow) return;
 
   iTimeSend = iNow + TIME_SEND;
-  Send(abs(iTest)-200);
+  //Send(abs(iTest)-200);
  // Send(0);
-  Serial.print(" ");Serial.println(abs(iTest)-200);
-  iTest+= 2;
-  if (iTest>400) iTest=-400;
+  //Serial.print(" ");Serial.println(abs(iTest)-200);
+ // iTest+= 2;
+  //if (iTest>400) iTest=-400;
 
-  digitalWrite(LED_BUILTIN, (iNow%2000)<1000);
+ //digitalWrite(LED_BUILTIN, (iNow%2000)<1000);
+  oSerial.write((uint8_t *) &oCmd, sizeof(oCmd));
   }
   
 }
-*/
+
 #endif
