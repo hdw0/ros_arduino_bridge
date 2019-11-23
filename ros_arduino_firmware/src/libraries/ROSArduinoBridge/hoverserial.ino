@@ -57,26 +57,26 @@ void Hover_Send(int leftSpeed, int rightSpeed)
 {
     int steer=0;
     float tmp=0;
-    leftSpeed=constrain(leftSpeed,-200,200);
-    rightSpeed=constrain(rightSpeed,-200,200);
-    tmp=leftSpeed-rightSpeed;
-    tmp=(float)tmp/(float)(rightSpeed+leftSpeed);
+    static int leftSpee, rightSpee;    
+    leftSpee=constrain(leftSpeed,-200,200);
+    rightSpee=constrain(rightSpeed,-200,200);
+    tmp=leftSpee-rightSpee;
+    tmp=(float)tmp/(float)(rightSpee+leftSpee);
     tmp*=(float)400.0;
-    tmp=constrain(tmp,-1000,1000);
+    tmp=constrain(tmp,-400,400);
     oCmd.steer = (int)tmp; ////////////
-    tmp=leftSpeed+rightSpeed;
+    tmp=leftSpee+rightSpee;
     tmp/=(float)2.0;
-    tmp=max(leftSpeed,rightSpeed);
+    tmp=max(leftSpee,rightSpee);
     tmp=constrain(tmp,-200,200);
-    oCmd.speed = (int)tmp; ////////////  
-//Serial.println("SetMotor DEBUG");
-//Serial.println(oCmd.steer);
-//Serial.println(oCmd.speed);
+    oCmd.speed = (int)tmp; ////////////      
+
   uint32_t crc = 0;
   crc32((const void *)&oCmd, sizeof(Serialcommand)-4,   &crc);
   oCmd.crc = crc;
-  
   oSerial.write((uint8_t *) &oCmd, sizeof(oCmd)); 
+  delay(100); 
+    
 }
 
 int iFailedRec = 0;
@@ -132,7 +132,8 @@ void Hover_Receive(void)
     Serial.print("\tlA: ");Serial.print(0.01 * (float)oFeedback.iAmpL);
     Serial.print("\trA: ");Serial.println(0.01 * (float)oFeedback.iAmpR);
     */
-    Hover_Send(leftSpeed, rightSpeed);
+    
+   // Hover_Send(leftSpeed, rightSpeed);    
   }
     if (iTimeSend > iNow) return;
 

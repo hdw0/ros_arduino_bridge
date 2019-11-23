@@ -168,18 +168,22 @@ char cmd;
 // Character arrays to hold the first and second arguments
 char argv1[32];
 char argv2[32];
+char argv3[32];
 
 // The arguments converted to integers
 long arg1;
 long arg2;
+long arg3;
 int leftSpeed, rightSpeed;
 /* Clear the current command parameters */
 void resetCommand() {
   cmd = NULL;
   memset(argv1, 0, sizeof(argv1));
   memset(argv2, 0, sizeof(argv2));
+  memset(argv3, 0, sizeof(argv3));
   arg1 = 0;
   arg2 = 0;
+  arg3 = 0;
   arg = 0;
   index = 0;
 }
@@ -192,6 +196,7 @@ int runCommand() {
   int pid_args[4];
   arg1 = atoi(argv1);
   arg2 = atoi(argv2);
+  arg3 = atoi(argv3);
   String output;
 
   switch(cmd) {
@@ -318,20 +323,22 @@ int runCommand() {
   case MOTOR_SPEEDS:
     /* Reset the auto stop timer */
     lastMotorCommand = millis();
-    if (arg1 == 0 && arg2 == 0) {
+    if (arg1 == 0 && arg2 == 0 && arg3 == 123) {
       setMotorSpeeds(0, 0);
       resetPID();
       moving = 0;
+       digitalWrite(LED_BUILTIN, 1);    
     }
-    else moving = 1;
-    #ifdef HOVER_SERIAL
-    leftSpeed=arg1;
-    rightSpeed=arg2;
-     //Hover_Send(arg1,arg2);
+    else if(arg3 == 123){
+    moving = 1;
+    digitalWrite(LED_BUILTIN, 0);
+    #ifdef HOVER_SERIAL    
+     Hover_Send(arg1,arg2);
     #elif
     leftPID.TargetTicksPerFrame = arg1;
     rightPID.TargetTicksPerFrame = arg2;
     #endif
+    }
     Serial.println(F("OK")); 
     break;
   case UPDATE_PID:
@@ -388,7 +395,7 @@ void setup() {
 */
 void loop() {
   #ifdef HOVER_SERIAL
-  Hover_Receive();
+  //Hover_Receive();
   #endif
   
   while (Serial.available() > 0) {
@@ -402,6 +409,7 @@ void loop() {
     if (chr == 13) {
       if (arg == 1) argv1[index] = NULL;
       else if (arg == 2) argv2[index] = NULL;
+      else if (arg == 3) argv3[index] = NULL;
       runCommand();
       resetCommand();
     }
@@ -412,6 +420,11 @@ void loop() {
       else if (arg == 1)  {
         argv1[index] = NULL;
         arg = 2;
+        index = 0;
+      }
+      else if (arg == 2)  {
+        argv2[index] = NULL;
+        arg = 3;
         index = 0;
       }
       continue;
@@ -430,6 +443,10 @@ void loop() {
         argv2[index] = chr;
         index++;
       }
+       else if (arg == 3) {
+        argv3[index] = chr;
+        index++;
+      }
     }
   }
   
@@ -444,7 +461,7 @@ void loop() {
     if ((millis() - lastMotorCommand) > AUTO_STOP_INTERVAL) {      
         setMotorSpeeds(0, 0);       
         moving = 0;
-        lastMotorCommand = millis();
+        lastMotorCommand = millis();       
     }
   #endif
 

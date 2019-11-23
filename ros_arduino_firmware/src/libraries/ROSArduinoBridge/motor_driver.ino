@@ -146,6 +146,7 @@
   
   /* A convenience function for setting both motor speeds */
   void setMotorSpeeds(int leftSpee, int rightSpee) {
+    Hover_Send(leftSpee, rightSpee);
     leftSpeed=leftSpee;
     rightSpeed=rightSpee;
   }

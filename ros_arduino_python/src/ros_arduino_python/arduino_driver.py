@@ -191,7 +191,7 @@ class Arduino:
 
     def execute_ack(self, cmd):
         ''' Thread safe execution of "cmd" on the Arduino returning True if response is ACK.
-        '''
+        '''        
         try:
             ack = self.execute(cmd)
             return ack == "OK"
@@ -251,7 +251,8 @@ class Arduino:
     def drive(self, right, left):
         ''' Speeds are given in encoder ticks per PID interval
         '''
-        return self.execute_ack('m %d %d' %(right, left))
+	rospy.loginfo('m-> %d %d 123' %(right, left))
+        return self.execute_ack('m %d %d 123' %(right, left))
     
     def drive_m_per_s(self, right, left):
         ''' Set the motor speeds in meters per second.
@@ -261,12 +262,13 @@ class Arduino:
 
         left_ticks_per_loop = int(left_revs_per_second * self.encoder_resolution * self.PID_INTERVAL * self.gear_reduction)
         right_ticks_per_loop  = int(right_revs_per_second * self.encoder_resolution * self.PID_INTERVAL * self.gear_reduction)
-
+        rospy.loginfo('mtik %d %d' %(right_ticks_per_loop , left_ticks_per_loop))
         self.drive(right_ticks_per_loop , left_ticks_per_loop )
         
     def stop(self):
         ''' Stop both motors.
         '''
+        rospy.loginfo('stop')
         self.drive(0, 0)
         
     def analog_pin_mode(self, pin, mode):
