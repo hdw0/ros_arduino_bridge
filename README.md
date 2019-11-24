@@ -1,8 +1,8 @@
 For ROS Kinetic, Ubuntu 16.04 and Python2 (might work with ROS Indigo and Ubuntu 14.04)
+Добавлена возможность управлять гироскутером.
 
 Table of Contents
 =================
-
 * [Overview](#overview)
 * [Official ROS Documentation](#official-ros-documentation)
 * [System Requirements](#system-requirements)
